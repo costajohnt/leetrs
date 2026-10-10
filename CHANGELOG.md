@@ -1,14 +1,17 @@
-## [unreleased](https://github.com/shadowmkj/leetrs)
+## [v1.2.0-beta.1](https://github.com/shadowmkj/leetrs/releases/tag/v1.2.0-beta.1) - 2026-10-10
+
+>[!NOTE]
+> This is a beta release testing the new `cookie-extract` engine. Please report any issues!
 
 ### 🚀 Features
 
-- *(cookie-extract)* Introduce cross-platform cookie extraction crate - ([9b7bb10](https://github.com/shadowmkj/leetrs/commit/9b7bb10768f8f6ccc91e0f1abf3d20d7e7453df1)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- *(cookie-extract)* Enhance linux encryption key extraction and profile discovery - ([5a1cbea](https://github.com/shadowmkj/leetrs/commit/5a1cbeacd5da4dca0ce18c5da11c533d97673db3)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- *(cookie-extract)* Expand firefox profile discovery for snaps, flatpaks, and forks - ([1daf0a0](https://github.com/shadowmkj/leetrs/commit/1daf0a05c1d91cbeb47402ce813c7419e4a65358)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- *(cookie-extract)* Support multiple linux keyring providers and key candidates - ([67ef989](https://github.com/shadowmkj/leetrs/commit/67ef98971f012c88a72b10fc6dbbcdfbca42f797)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- *(logging)* Add verbose diagnostic logging with env_logger - ([e7452c3](https://github.com/shadowmkj/leetrs/commit/e7452c366badda298c546d35f934279b439dd2d2)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- *(auth)* Add debug logging for extracted cookies - ([57a8d17](https://github.com/shadowmkj/leetrs/commit/57a8d17a0d96e193620f1dea96ffe6151f078f85)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- *(cookie-extract)* Improve Windows support and sqlite wal handling - ([370440d](https://github.com/shadowmkj/leetrs/commit/370440d89f47a6ffe59526751ba7fa02bc39b9d7)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- *(cookie-extract)* Introduce cross-platform cookie extraction crate - ([9b7bb10](https://github.com/shadowmkj/leetrs/commit/9b7bb10768f8f6ccc91e0f1abf3d20d7e7453df1)) (by Milan Pramod)
+- *(cookie-extract)* Enhance linux encryption key extraction and profile discovery - ([5a1cbea](https://github.com/shadowmkj/leetrs/commit/5a1cbeacd5da4dca0ce18c5da11c533d97673db3)) (by Milan Pramod)
+- *(cookie-extract)* Expand firefox profile discovery for snaps, flatpaks, and forks - ([1daf0a0](https://github.com/shadowmkj/leetrs/commit/1daf0a05c1d91cbeb47402ce813c7419e4a65358)) (by Milan Pramod)
+- *(cookie-extract)* Support multiple linux keyring providers and key candidates - ([67ef989](https://github.com/shadowmkj/leetrs/commit/67ef98971f012c88a72b10fc6dbbcdfbca42f797)) (by Milan Pramod)
+- *(logging)* Add verbose diagnostic logging with env_logger - ([e7452c3](https://github.com/shadowmkj/leetrs/commit/e7452c366badda298c546d35f934279b439dd2d2)) (by Milan Pramod)
+- *(auth)* Add debug logging for extracted cookies - ([57a8d17](https://github.com/shadowmkj/leetrs/commit/57a8d17a0d96e193620f1dea96ffe6151f078f85)) (by Milan Pramod)
+- *(cookie-extract)* Improve Windows support and sqlite wal handling - ([370440d](https://github.com/shadowmkj/leetrs/commit/370440d89f47a6ffe59526751ba7fa02bc39b9d7)) (by Milan Pramod)
 
 ### 🐛 Bug Fixes
 
@@ -20,9 +23,11 @@
 - *(changelog)* Update changelog and git-cliff configuration - ([36f4fda](https://github.com/shadowmkj/leetrs/commit/36f4fdacaad0aa335d69c1e51795d4edf5dd15ca)) (from [`@shadowmkj`](https://github.com/shadowmkj))
 - *(changelog)* Update git-cliff configuration and regenerate changelog - ([5502a96](https://github.com/shadowmkj/leetrs/commit/5502a96a6a2f6c5e24f7267cf52f856d4cca1da4)) (from [`@shadowmkj`](https://github.com/shadowmkj))
 - Update contributing guide and pull request template for xtask ([#33](https://github.com/shadowmkj/leetrs/pull/33)) - ([9f73922](https://github.com/shadowmkj/leetrs/commit/9f739224ef19cf460ab63beff77629571cff8f4a)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- *(cookie-extract,xtask)* Simplify nested conditions and add cross-target clippy support - ([364cb46](https://github.com/shadowmkj/leetrs/commit/364cb462f98ec50f537b7cf01fc048f05544c659)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- *(cookie-extract)* Add deterministic v10 decryption round-trip test - ([f35dec1](https://github.com/shadowmkj/leetrs/commit/f35dec18047ef391b4b4889ecce909a37d547f3c)) (from [`@shadowmkj`](https://github.com/shadowmkj))
-- Update authentication documentation for expanded browser support and manual cURL parsing - ([e2549d0](https://github.com/shadowmkj/leetrs/commit/e2549d010a6737c323549da3272430d77fef1555)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- *(cookie-extract,xtask)* Simplify nested conditions and add cross-target clippy support - ([364cb46](https://github.com/shadowmkj/leetrs/commit/364cb462f98ec50f537b7cf01fc048f05544c659)) (by Milan Pramod)
+- *(cookie-extract)* Add deterministic v10 decryption round-trip test - ([f35dec1](https://github.com/shadowmkj/leetrs/commit/f35dec18047ef391b4b4889ecce909a37d547f3c)) (by Milan Pramod)
+- Update authentication documentation for expanded browser support and manual cURL parsing - ([e2549d0](https://github.com/shadowmkj/leetrs/commit/e2549d010a6737c323549da3272430d77fef1555)) (by Milan Pramod)
+- *(changelog)* Update changelog and git-cliff configuration - ([cdd1e9d](https://github.com/shadowmkj/leetrs/commit/cdd1e9d7ba966718bc9439759e255a1874bd5a36)) (by Milan Pramod)
+- *(changelog)* Simplify author and contributor templates in cliff.toml - ([55cf87b](https://github.com/shadowmkj/leetrs/commit/55cf87bc4387fe02e89ff2fc692ee27b10c610fb)) (by Milan Pramod)
 ## [v1.1.0](https://github.com/shadowmkj/leetrs/releases/tag/v1.1.0) - 2026-08-19
 
 ### 🚀 Features
@@ -53,7 +58,52 @@
 
 ### ⚙️ Misc
 
+- Initial commit - ([73d73d0](https://github.com/shadowmkj/leetrs/commit/73d73d081c1452101781c03bbdb8913cfc31ffe3)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Initial GraphQL setup + Auth setup - ([063d703](https://github.com/shadowmkj/leetrs/commit/063d703d5f82d8ada3e8a94973d21f00fcfc67fc)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Basic code submission - ([b477ea5](https://github.com/shadowmkj/leetrs/commit/b477ea5e6287a4085301e1c696dc2837d8ae481b)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Support for python and rust snippets. Better submission and file naming. - ([00fbc17](https://github.com/shadowmkj/leetrs/commit/00fbc1775d947b3c7f1277499be8fced1b5ae4b5)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add README - ([5d33ee9](https://github.com/shadowmkj/leetrs/commit/5d33ee94c3a44b43aebcf3edd0bd0e8b7cd3d56d)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add autocompletions - ([d9fe423](https://github.com/shadowmkj/leetrs/commit/d9fe4237103270849b68ba66b4ab78880a96a7ac)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Better submissions + Code refactoring - ([8dd2d05](https://github.com/shadowmkj/leetrs/commit/8dd2d0585b26bd0b85c8208dda0ea3877201cf79)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Implement basic TUI using ratatui - ([69d89d4](https://github.com/shadowmkj/leetrs/commit/69d89d421ca01d541bd4a29dbce2df3221eae1f9)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Better error handling + Default language to python - ([a40fa27](https://github.com/shadowmkj/leetrs/commit/a40fa273d50c70218596df7f8203debd63a845d0)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Caching problems in TUI (made it 10x faster) - ([af78249](https://github.com/shadowmkj/leetrs/commit/af782496e71be6d302f518d5ea468861b635a52a)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add runtime error handling - ([e963724](https://github.com/shadowmkj/leetrs/commit/e9637243eb81de4f20d34ae2bf8064836110edad)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Added search + basic difficulty filtering - ([27ad968](https://github.com/shadowmkj/leetrs/commit/27ad968e9d994f777e0ba3eaae7a09d0a72ec889)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Implemented continuity with TUI - ([8a67333](https://github.com/shadowmkj/leetrs/commit/8a67333bc0acfb1bb63733b1e921db8dd86fd62e)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Default behaviour of leetrs to TUI - ([94ec655](https://github.com/shadowmkj/leetrs/commit/94ec655993a2ef5d8482bf5329f46ffa4d908347)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add simple instruction + minor UI updates - ([388e3c4](https://github.com/shadowmkj/leetrs/commit/388e3c4408c3710d15cc61bc59bbfa69ce4a6340)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Major Refactor + Add a help screen - ([025210c](https://github.com/shadowmkj/leetrs/commit/025210cada4fc8e63b11097bbd9a5091d2421afe)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add a hint in selection screen for "?" - ([57ed465](https://github.com/shadowmkj/leetrs/commit/57ed465a612dce402fa5e89896e672ca4958d0d5)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Added test submission feature - ([2b2f62f](https://github.com/shadowmkj/leetrs/commit/2b2f62ffdfd0d9e04a78824ef984462cf2b5d024)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add a completed mark for problems - ([a0d5fad](https://github.com/shadowmkj/leetrs/commit/a0d5fad078e14543db723cc641aeffd3c012dee1)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Performance Optimizations.
+
+Lesser memory allocations (replaced clone() with Reference Counting)
+Also use indices for filtering instead of cloning data. - ([1348cb9](https://github.com/shadowmkj/leetrs/commit/1348cb95ef27c9d687e23d680fbc0042f51134bd)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Added state persistance in TUI
+
+After closing Neovim, the TUI state is not lost.
+The search, filter states are preserved. - ([87a947b](https://github.com/shadowmkj/leetrs/commit/87a947b64794576423d465327f83b45bbe6b93d8)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add support for SQL problems - ([854dbb5](https://github.com/shadowmkj/leetrs/commit/854dbb53ca5d1f007bdc87c807b0770f46190a1a)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Added topics to problems. TUI display also
+
+It displays first topic in the TUI now - ([a7c96e2](https://github.com/shadowmkj/leetrs/commit/a7c96e2ebdcb919dce9df9a2ff722dcca07d91c2)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Fix Database problem submission - ([ec070fe](https://github.com/shadowmkj/leetrs/commit/ec070fe8663f01518c33886684d8bb6901ea9d3f)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add user data + handle leetcode premium questions - ([0ce5cec](https://github.com/shadowmkj/leetrs/commit/0ce5cec42dca7e709a97bea56a00e02af154c482)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add a keybind 'o' to open the problem in browser - ([b34af2b](https://github.com/shadowmkj/leetrs/commit/b34af2baa842fa9dfa028dd550951cefbb3a48d7)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Fix some errors - ([e78b5d9](https://github.com/shadowmkj/leetrs/commit/e78b5d9d5a25a47b4a1aa54da414a3d22dc845b1)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add contributing guidelines to CONTRIBUTING.md
+
+Added guidelines for contributing to the project, including ways to contribute, opening issues, and making contributions. - ([0ca676e](https://github.com/shadowmkj/leetrs/commit/0ca676eab120d0f137321ccc81a179f223bc3ba5)) (from [`@shadowmkj`](https://github.com/shadowmkj))
 - Added documentation for the entire codebase - ([2d87c17](https://github.com/shadowmkj/leetrs/commit/2d87c1712c9f60893cd116a852ba836a0e7472e0)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Add a video demo - ([e65e8c7](https://github.com/shadowmkj/leetrs/commit/e65e8c7bc59005dd5c91362f1852b3f46262bb3c)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Merge pull request #3 from meghakj4/optimization
+
+updated cargo.toml with recommended optimization - ([d6b5d0a](https://github.com/shadowmkj/leetrs/commit/d6b5d0acf3f2dbdbaaf71c0c3e8f86cc5578ecc3)) (from [`@meghakj4`](https://github.com/meghakj4))
+- Allow language selection in tui command ([#4](https://github.com/shadowmkj/leetrs/pull/4)) - ([5541606](https://github.com/shadowmkj/leetrs/commit/5541606c7ffc6f1cc255d2645645900e7aa2685a)) (from [`@spencer-hann`](https://github.com/spencer-hann))
+- Update gh workflow: only run release after pushing tag - ([3d05ee5](https://github.com/shadowmkj/leetrs/commit/3d05ee58576c089046b4354c4437a58c2be826ad)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Remove duplicate Esc binding entry in help screen ([#5](https://github.com/shadowmkj/leetrs/pull/5)) - ([aba52e9](https://github.com/shadowmkj/leetrs/commit/aba52e9f39e1185c6e9734741e426ad9334456b3)) (from [`@SykikXO`](https://github.com/SykikXO))
 - Dynamic editor support, let-chains, and performance cleanups - ([7f147b0](https://github.com/shadowmkj/leetrs/commit/7f147b0e46a77564f9abb7bbbd49b1f58708ebd3)) (from [`@shadowmkj`](https://github.com/shadowmkj))
 - *(models)* Split models.rs into submodules and extract language helpers - ([9d72686](https://github.com/shadowmkj/leetrs/commit/9d72686c74d3fcd2ca58bf1c931909eb4e5fa92f)) (from [`@shadowmkj`](https://github.com/shadowmkj))
 - *(cache)* Introduce CacheService and consolidate project directory lookups - ([2df014e](https://github.com/shadowmkj/leetrs/commit/2df014e3db29518c75ee3fd2854d4b22057bb807)) (from [`@shadowmkj`](https://github.com/shadowmkj))
