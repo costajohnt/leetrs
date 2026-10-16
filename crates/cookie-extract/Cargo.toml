@@ -5,6 +5,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Decoupled cross-platform browser cookie extraction and parsing library"
+readme = "README.md"
 
 [dependencies]
 rusqlite = { version = "0.31", features = ["bundled"] }
