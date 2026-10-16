@@ -1,7 +1,7 @@
 # ADR-002: Cookie-Based Browser Authentication Strategy
 
 ## Status
-Accepted
+Superseded by [ADR-003](./0003-modular-cookie-extract-crate.md)
 
 ## Date
 2026-08-13

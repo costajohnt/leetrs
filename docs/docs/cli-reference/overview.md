@@ -14,7 +14,7 @@ sidebar_position: 1
 
 | Subcommand | Arguments / Flags | Purpose |
 |---|---|---|
-| [`auth`](./auth-and-status.md) | — | Interactively authenticate via Chrome, Firefox, or manual token input |
+| [`auth`](./auth-and-status.md) | — | Interactively authenticate via auto-detected browser (Chrome, Firefox, Brave, Edge, Arc) or cURL / Cookie header |
 | [`status`](./auth-and-status.md) | — | Display active authentication status and token previews |
 | [`tui`](./tui.md) | `[language]` | Launch interactive Ratatui terminal problem browser |
 | [`pick`](./pick.md) | `<identifier>` `[language]` `[-p, --preview]` | Fetch problem description & stub, generate local files, and open editor |
@@ -29,7 +29,7 @@ sidebar_position: 1
 | Flag | Short | Description |
 |---|---|---|
 | `--help` | `-h` | Print help information for `leetrs` or any subcommand |
-| `--version` | `-V` | Print version information (`leetrs 1.1.0`) |
+| `--version` | `-V` | Print version information (`leetrs 1.2.0`) |
 
 ---
 

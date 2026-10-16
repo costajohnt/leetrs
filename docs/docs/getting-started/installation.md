@@ -16,7 +16,7 @@ sidebar_position: 2
 |---|---|---|
 | **OS** | macOS, Linux, Windows | macOS 11+, Ubuntu 20.04+, Windows 10+ |
 | **Neovim** | `0.9+` | Required for automatic vertical split editing |
-| **Browser** | Chrome / Firefox | Used for automatic cookie extraction |
+| **Browser** | Chrome, Firefox, Brave, Edge, Arc | Native `cookie-extract` support; cURL fallback for headless / others |
 | **Rust Toolchain** | `1.70+` | Required for `cargo install` or building from source |
 
 ---
@@ -64,7 +64,11 @@ brew update && brew upgrade leetrs
 Download and install pre-compiled release binaries directly without needing a Rust toolchain:
 
 ```bash
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shadowmkj/leetrs/releases/download/v1.1.0/leetrs-installer.sh | sh
+# Install the latest release:
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shadowmkj/leetrs/releases/latest/download/leetrs-installer.sh | sh
+
+# Or install a specific version (e.g. v1.2.0):
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/shadowmkj/leetrs/releases/download/v1.2.0/leetrs-installer.sh | sh
 ```
 
 ---
@@ -102,5 +106,5 @@ leetrs --version
 
 Expected output:
 ```text
-leetrs 1.1.0
+leetrs 1.2.0
 ```

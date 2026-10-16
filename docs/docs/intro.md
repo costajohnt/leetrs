@@ -22,8 +22,9 @@ By combining terminal-native browsing, automatic browser authentication, and aut
   - One-key web browser fallback (`o`) and interactive help panel (`?`).
 
 - **🔑 Intelligent Cookie Authentication (`leetrs auth`)**
-  - Automatically extracts `LEETCODE_SESSION` and `csrftoken` cookies directly from active **Chrome** or **Firefox** browser profiles.
-  - Manual token fallback for custom, headless, or containerized browser environments.
+  - Powered by the native, decoupled [`cookie-extract`](https://github.com/shadowmkj/leetrs/tree/main/crates/cookie-extract) workspace crate (replacing the deprecated `rookie` crate).
+  - Automatically extracts `LEETCODE_SESSION` and `csrftoken` cookies from **Chrome**, **Firefox**, **Brave**, **Edge**, **Arc**, and privacy forks (**LibreWolf**, **Floorp**, **Waterfox**) using safe temporary SQLite staging and OS keyrings.
+  - Universal single-paste fallback for cURL commands, raw `Cookie:` headers, and headless/SSH environments.
 
 - **📝 Frictionless Problem Fetching (`leetrs pick`)**
   - Fetch problems by URL slug (e.g., `two-sum`) or numerical ID (e.g., `1`).

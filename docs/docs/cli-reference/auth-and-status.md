@@ -41,9 +41,13 @@ leetrs -v auth
   Extract from Arc
 ```
 
-1. **Auto-detect browser**: Scans available browser profile databases and automatically extracts cookies from the active session.
-2. **Paste cURL / Cookie header manually**: Allows pasting a full copied cURL command or raw `Cookie:` header from browser Developer Tools.
-3. **Extract from specific browser**: Direct extraction targeting Firefox, Chrome, Brave, Edge, or Arc.
+1. **Auto-detect browser**: Scans available browser profile databases across all supported browser families and automatically extracts cookies from the active session.
+2. **Paste cURL / Cookie header manually**: Allows pasting a full copied cURL command (`-H 'Cookie: ...'` or `-b '...'`) or raw `Cookie:` header from browser Developer Tools.
+3. **Extract from specific browser**: Direct extraction targeting **Firefox** (including forks like LibreWolf, Floorp, Waterfox), **Chrome**, **Brave**, **Edge**, or **Arc**.
+
+:::info[Native Engine]
+Browser extraction is performed by the native [`cookie-extract`](https://github.com/shadowmkj/leetrs/tree/main/crates/cookie-extract) workspace crate (replacing the deprecated `rookie` crate). It uses isolated temporary SQLite staging to prevent database lock contention while your browser is open.
+:::
 
 ---
 

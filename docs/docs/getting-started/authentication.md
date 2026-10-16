@@ -43,7 +43,18 @@ If you are already logged into LeetCode in any supported browser (**Firefox**, *
 - `Auto-detect browser (Recommended)`
 - Or specify your browser directly from the menu.
 
-`leetrs` uses the internal [`cookie-extract`](https://github.com/shadowmkj/leetrs/tree/main/crates/cookie-extract) crate to safely copy and decrypt active browser cookies across macOS, Arch Linux, Debian/Ubuntu, Flatpak, and Snap without requiring browser extensions or external helpers.
+### Built with Native `cookie-extract` (Replaces `rookie`)
+
+Earlier versions of `leetrs` relied on the external `rookie` crate. In `v1.2.0`, `rookie` has been **completely removed and deprecated** in favor of the custom, lightweight [`cookie-extract`](https://github.com/shadowmkj/leetrs/tree/main/crates/cookie-extract) workspace crate.
+
+**Key advantages of `cookie-extract`:**
+- **Zero External Runtime Dependencies**: Eliminates bulky third-party dependencies and reduces compilation footprint.
+- **Safe SQLite Staging**: Stages isolated temporary copies of `cookies.sqlite` along with companion `-wal` (write-ahead log) and `-shm` (shared memory) files. This prevents file lock contention even if your browser is actively open and running while authenticating.
+- **Native OS Keyring Decryption**:
+  - **macOS**: Queries macOS Keychain via Apple's Security framework and decrypts AES-128-CBC cookies.
+  - **Linux**: Resolves encryption keys across GNOME Keyring / Secret Service, KWallet, and fallback passwords, with full support for native packages, Flatpak, and Snap sandboxes.
+  - **Windows**: Decrypts AES-GCM payloads via DPAPI (`CryptUnprotectData`).
+- **Privacy Browser Support**: Out-of-the-box discovery for LibreWolf, Floorp, and Waterfox profiles from `profiles.ini`.
 
 :::tip[Prerequisites for Automatic Extraction]
 - You must be logged into [leetcode.com](https://leetcode.com) in the chosen browser.

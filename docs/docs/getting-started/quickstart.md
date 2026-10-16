@@ -14,7 +14,7 @@ Get up and running with `leetrs` in under 5 minutes.
 
 Before starting, ensure you have:
 1. A valid [LeetCode](https://leetcode.com) account.
-2. Active login session in **Google Chrome** or **Mozilla Firefox** (for automatic cookie extraction).
+2. Active login session in a supported browser (**Chrome**, **Firefox**, **Brave**, **Edge**, **Arc**) or copied cURL / Cookie header.
 3. **Neovim** (0.9+) installed and available as `nvim` in your `$PATH`.
 
 ---
@@ -41,7 +41,7 @@ Run the interactive authentication wizard:
 leetrs auth
 ```
 
-Select your browser (e.g. `Extract from Firefox` or `Extract from Chrome`). `leetrs` will extract your active session cookies (`LEETCODE_SESSION` and `csrftoken`) and save them securely to `~/.config/leetrs/` (or Windows `%APPDATA%\leetrs`).
+Select `Auto-detect browser (Recommended)` or choose your browser directly (**Firefox**, **Chrome**, **Brave**, **Edge**, **Arc**). Alternatively, choose `Paste cURL / Cookie header manually`. `leetrs` will extract/parse your active session cookies (`LEETCODE_SESSION` and `csrftoken`) and save them securely to `~/.config/leetrs/` (or Windows `%APPDATA%\leetrs`).
 
 Verify authentication state:
 

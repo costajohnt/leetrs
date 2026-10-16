@@ -18,8 +18,10 @@ Common questions and resolution steps for issues encountered while using `leetrs
 
 **Solutions**:
 1. Open your browser and verify that you are logged into [leetcode.com](https://leetcode.com).
-2. Run with verbose diagnostic logging: `leetrs --verbose auth` (or `leetrs -v auth`) to see exactly which database paths and keyring keys were scanned.
-3. If using an unsupported browser or SSH session, choose **"Paste cURL / Cookie header manually"**: in your browser's Developer Tools (`F12` → **Network** tab), right click any request → **Copy as cURL**, and paste directly into `leetrs auth`.
+2. Run with verbose diagnostic logging: `leetrs --verbose auth` (or `leetrs -v auth`) to see exactly which database paths, profile directories, and keyring candidates were scanned by the `cookie-extract` engine.
+3. **Database File Locking**: Unlike older tools that locked when browsers were running, `cookie-extract` safely stages temporary copies of the SQLite databases and transaction logs (`-wal` / `-shm`), so you do not need to quit your browser.
+4. **Windows Chrome 127+ App-Bound Encryption**: Recent Windows Chrome updates restrict out-of-process DPAPI decryption. If `cookie-extract` reports `AppBoundRestricted`, select **"Paste cURL / Cookie header manually"**: in your browser's Developer Tools (`F12` → **Network** tab), right click any request → **Copy as cURL**, and paste directly into `leetrs auth`.
+5. If using a remote SSH session or unsupported browser, choose **"Paste cURL / Cookie header manually"** to paste tokens directly.
 
 ---
 

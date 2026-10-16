@@ -10,9 +10,21 @@ sidebar_position: 1
 
 ---
 
+## 📦 Workspace & Crate Structure
+
+`leetrs` is structured as a Cargo workspace with distinct crates for separation of concerns:
+
+| Member | Directory | Purpose |
+|---|---|---|
+| **`leetrs`** | `src/` | Main CLI binary and interactive Ratatui TUI application |
+| **`cookie-extract`** | `crates/cookie-extract` | Standalone, lightweight browser cookie extraction & cURL parsing library (completely replaces the deprecated `rookie` crate) |
+| **`xtask`** | `xtask/` | Developer and CI task runner for cross-platform linting, testing, and formatting |
+
+---
+
 ## 🧱 Module Structure
 
-The Rust codebase (`src/`) is organized into dedicated modules:
+The application codebase (`src/`) is organized into dedicated modules:
 
 | Module | Source File | Description |
 |---|---|---|
