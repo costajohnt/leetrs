@@ -61,6 +61,7 @@ pub struct SubmissionResult {
     pub runtime_percentile: Option<f64>,
     pub compile_error: Option<String>,
     pub full_runtime_error: Option<String>,
+    pub std_output_list: Option<Vec<String>>,
     // Submit-run specific
     pub input: Option<String>,
     pub expected_output: Option<String>,
@@ -144,6 +145,10 @@ impl SubmissionService {
                 })?;
 
             let status_msg = r.status_msg.as_deref().unwrap_or("Unknown");
+            let std_output_list = r
+                .std_output_list
+                .filter(|list| !list.is_empty())
+                .or_else(|| r.std_output.map(|s| vec![s]));
             Ok(SubmissionResult {
                 status: SubmissionStatus::from_msg(status_msg),
                 is_test: true,
@@ -161,6 +166,7 @@ impl SubmissionService {
                 input: None,
                 expected_output: None,
                 code_output: r.code_output.map(|v| v.join("\t")),
+                std_output_list,
             })
         } else {
             // NOTE: LeetCode's submit endpoint requires the internal `question_id`
@@ -181,6 +187,10 @@ impl SubmissionService {
                 })?;
 
             let status_msg = r.status_msg.as_deref().unwrap_or("Unknown");
+            let std_output_list = r
+                .std_output_list
+                .filter(|list| !list.is_empty())
+                .or_else(|| r.std_output.map(|s| vec![s]));
             Ok(SubmissionResult {
                 status: SubmissionStatus::from_msg(status_msg),
                 is_test: false,
@@ -198,6 +208,7 @@ impl SubmissionService {
                 input: r.input,
                 expected_output: r.expected_output,
                 code_output: r.code_output,
+                std_output_list,
             })
         }
     }

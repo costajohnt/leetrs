@@ -47,6 +47,8 @@ pub struct TestSubmissionCheckResult {
     pub status_memory: Option<String>,
     pub status_msg: Option<String>,
     pub status_runtime: Option<String>,
+    pub std_output: Option<String>,
+    pub std_output_list: Option<Vec<String>>,
     pub total_correct: Option<u32>,
     pub total_testcases: Option<u32>,
 }
@@ -68,6 +70,8 @@ pub struct SubmissionCheckResult {
     pub status_memory: Option<String>,
     pub status_msg: Option<String>, // "Accepted", "Wrong Answer", "Compile Error"
     pub status_runtime: Option<String>,
+    pub std_output: Option<String>,
+    pub std_output_list: Option<Vec<String>>,
     pub total_correct: Option<u32>,
     pub total_testcases: Option<u32>,
 }
