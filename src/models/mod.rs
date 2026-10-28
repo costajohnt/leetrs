@@ -120,6 +120,52 @@ mod tests {
     }
 
     #[test]
+    fn test_submission_check_result_deserializes_stdout() {
+        let raw = r#"{
+            "state": "SUCCESS",
+            "std_output_list": ["hello from testcase 1\n", "debug 2\n"],
+            "std_output": "hello from testcase 1\n"
+        }"#;
+        let r: TestSubmissionCheckResult = serde_json::from_str(raw).unwrap();
+        assert_eq!(
+            r.std_output_list,
+            Some(vec!["hello from testcase 1\n".into(), "debug 2\n".into()])
+        );
+        assert_eq!(r.std_output.as_deref(), Some("hello from testcase 1\n"));
+    }
+
+    #[test]
+    fn submission_check_result_deserializes_stdout() {
+        let raw = r#"{
+            "state": "SUCCESS",
+            "std_output": "print output here\n",
+            "std_output_list": ["print output here\n"]
+        }"#;
+        let r: SubmissionCheckResult = serde_json::from_str(raw).unwrap();
+        assert_eq!(r.std_output.as_deref(), Some("print output here\n"));
+        assert_eq!(r.std_output_list, Some(vec!["print output here\n".into()]));
+    }
+
+    #[test]
+    fn test_submission_check_result_empty_list_and_fallback_compatibility() {
+        let raw = r#"{
+            "state": "SUCCESS",
+            "std_output_list": [],
+            "std_output": "fallback output\n"
+        }"#;
+        let r: TestSubmissionCheckResult = serde_json::from_str(raw).unwrap();
+        assert_eq!(r.std_output_list, Some(vec![]));
+        assert_eq!(r.std_output.as_deref(), Some("fallback output\n"));
+
+        // Verify the fallback logic as used in SubmissionService
+        let resolved = r
+            .std_output_list
+            .filter(|l| !l.is_empty())
+            .or_else(|| r.std_output.map(|s| vec![s]));
+        assert_eq!(resolved, Some(vec!["fallback output\n".to_string()]));
+    }
+
+    #[test]
     fn submission_check_result_wrong_answer_fields() {
         let raw = r#"{
             "state": "SUCCESS",

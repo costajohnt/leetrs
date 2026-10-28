@@ -8,7 +8,7 @@ use std::path::Path;
 use crate::{
     client::LeetCodeClient,
     error::{EngineError, Result},
-    models::{Language, Question},
+    models::{Language, Question, SubmissionCheckResult, TestSubmissionCheckResult},
 };
 
 // ============================================================================
@@ -61,10 +61,69 @@ pub struct SubmissionResult {
     pub runtime_percentile: Option<f64>,
     pub compile_error: Option<String>,
     pub full_runtime_error: Option<String>,
+    pub std_output_list: Option<Vec<String>>,
     // Submit-run specific
     pub input: Option<String>,
     pub expected_output: Option<String>,
     pub code_output: Option<String>,
+}
+
+impl SubmissionResult {
+    /// Constructs a [`SubmissionResult`] from the polled response of a test execution (`interpret_solution`).
+    pub fn from_test_check(r: TestSubmissionCheckResult) -> Self {
+        let status_msg = r.status_msg.as_deref().unwrap_or("Unknown");
+        let std_output_list = r
+            .std_output_list
+            .filter(|list| !list.is_empty())
+            .or_else(|| r.std_output.map(|s| vec![s]));
+        Self {
+            status: SubmissionStatus::from_msg(status_msg),
+            is_test: true,
+            correct_answer: r.correct_answer,
+            code_answer: r.code_answer,
+            expected_code_answer: r.expected_code_answer,
+            total_correct: r.total_correct,
+            total_testcases: r.total_testcases,
+            runtime: r.status_runtime,
+            memory: r.status_memory,
+            memory_percentile: r.memory_percentile,
+            runtime_percentile: r.runtime_percentile,
+            compile_error: None,
+            full_runtime_error: r.full_runtime_error,
+            input: None,
+            expected_output: None,
+            code_output: r.code_output.map(|v| v.join("\t")),
+            std_output_list,
+        }
+    }
+
+    /// Constructs a [`SubmissionResult`] from the polled response of a full submission (`submit`).
+    pub fn from_submit_check(r: SubmissionCheckResult) -> Self {
+        let status_msg = r.status_msg.as_deref().unwrap_or("Unknown");
+        let std_output_list = r
+            .std_output_list
+            .filter(|list| !list.is_empty())
+            .or_else(|| r.std_output.map(|s| vec![s]));
+        Self {
+            status: SubmissionStatus::from_msg(status_msg),
+            is_test: false,
+            correct_answer: None,
+            code_answer: None,
+            expected_code_answer: None,
+            total_correct: r.total_correct,
+            total_testcases: r.total_testcases,
+            runtime: r.status_runtime,
+            memory: r.status_memory,
+            memory_percentile: r.memory_percentile,
+            runtime_percentile: r.runtime_percentile,
+            compile_error: r.compile_error,
+            full_runtime_error: r.full_runtime_error,
+            input: r.input,
+            expected_output: r.expected_output,
+            code_output: r.code_output,
+            std_output_list,
+        }
+    }
 }
 
 // ============================================================================
@@ -143,25 +202,7 @@ impl SubmissionService {
                     EngineError::Other(format!("Failed to check test submission status: {}", e))
                 })?;
 
-            let status_msg = r.status_msg.as_deref().unwrap_or("Unknown");
-            Ok(SubmissionResult {
-                status: SubmissionStatus::from_msg(status_msg),
-                is_test: true,
-                correct_answer: r.correct_answer,
-                code_answer: r.code_answer,
-                expected_code_answer: r.expected_code_answer,
-                total_correct: r.total_correct,
-                total_testcases: r.total_testcases,
-                runtime: r.status_runtime,
-                memory: r.status_memory,
-                memory_percentile: r.memory_percentile,
-                runtime_percentile: r.runtime_percentile,
-                compile_error: None,
-                full_runtime_error: r.full_runtime_error,
-                input: None,
-                expected_output: None,
-                code_output: r.code_output.map(|v| v.join("\t")),
-            })
+            Ok(SubmissionResult::from_test_check(r))
         } else {
             // NOTE: LeetCode's submit endpoint requires the internal `question_id`
             // (not the public `question_frontend_id`) in its request payload.
@@ -180,25 +221,215 @@ impl SubmissionService {
                     EngineError::Other(format!("Failed to check submission status: {}", e))
                 })?;
 
-            let status_msg = r.status_msg.as_deref().unwrap_or("Unknown");
-            Ok(SubmissionResult {
-                status: SubmissionStatus::from_msg(status_msg),
-                is_test: false,
-                correct_answer: None,
-                code_answer: None,
-                expected_code_answer: None,
-                total_correct: r.total_correct,
-                total_testcases: r.total_testcases,
-                runtime: r.status_runtime,
-                memory: r.status_memory,
-                memory_percentile: r.memory_percentile,
-                runtime_percentile: r.runtime_percentile,
-                compile_error: r.compile_error,
-                full_runtime_error: r.full_runtime_error,
-                input: r.input,
-                expected_output: r.expected_output,
-                code_output: r.code_output,
-            })
+            Ok(SubmissionResult::from_submit_check(r))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::auth::LeetCodeCredentials;
+
+    #[test]
+    fn test_submission_status_from_msg() {
+        assert_eq!(
+            SubmissionStatus::from_msg("Accepted"),
+            SubmissionStatus::Accepted
+        );
+        assert_eq!(
+            SubmissionStatus::from_msg("Wrong Answer"),
+            SubmissionStatus::WrongAnswer
+        );
+        assert_eq!(
+            SubmissionStatus::from_msg("Compile Error"),
+            SubmissionStatus::CompileError
+        );
+        assert_eq!(
+            SubmissionStatus::from_msg("Runtime Error"),
+            SubmissionStatus::RuntimeError
+        );
+        assert_eq!(
+            SubmissionStatus::from_msg("Time Limit Exceeded"),
+            SubmissionStatus::TimeLimitExceeded
+        );
+        assert_eq!(
+            SubmissionStatus::from_msg("Memory Limit Exceeded"),
+            SubmissionStatus::Unknown("Memory Limit Exceeded".to_string())
+        );
+    }
+
+    #[test]
+    fn test_from_test_check_with_std_output_list() {
+        let check = TestSubmissionCheckResult {
+            code_answer: Some(vec!["[0, 1]".into()]),
+            code_output: Some(vec!["out1".into(), "out2".into()]),
+            correct_answer: Some(true),
+            expected_code_answer: Some(vec!["[0, 1]".into()]),
+            full_runtime_error: None,
+            lang: Some("rust".into()),
+            memory_percentile: Some(85.0),
+            run_success: Some(true),
+            runtime_percentile: Some(92.0),
+            state: "SUCCESS".into(),
+            status_memory: Some("2 MB".into()),
+            status_msg: Some("Accepted".into()),
+            status_runtime: Some("0 ms".into()),
+            std_output: Some("ignored fallback".into()),
+            std_output_list: Some(vec!["case 1 debug\n".into(), "case 2 debug\n".into()]),
+            total_correct: Some(2),
+            total_testcases: Some(2),
+        };
+
+        let result = SubmissionResult::from_test_check(check);
+        assert!(result.is_test);
+        assert_eq!(result.status, SubmissionStatus::Accepted);
+        assert_eq!(result.correct_answer, Some(true));
+        assert_eq!(result.code_output.as_deref(), Some("out1\tout2"));
+        assert_eq!(
+            result.std_output_list,
+            Some(vec!["case 1 debug\n".into(), "case 2 debug\n".into()])
+        );
+        assert_eq!(result.runtime.as_deref(), Some("0 ms"));
+        assert_eq!(result.memory.as_deref(), Some("2 MB"));
+    }
+
+    #[test]
+    fn test_from_test_check_fallback_on_empty_list() {
+        let check = TestSubmissionCheckResult {
+            code_answer: None,
+            code_output: None,
+            correct_answer: Some(false),
+            expected_code_answer: None,
+            full_runtime_error: Some("panic message".into()),
+            lang: Some("rust".into()),
+            memory_percentile: None,
+            run_success: Some(false),
+            runtime_percentile: None,
+            state: "SUCCESS".into(),
+            status_memory: None,
+            status_msg: Some("Runtime Error".into()),
+            status_runtime: None,
+            std_output: Some("single fallback output\n".into()),
+            std_output_list: Some(vec![]),
+            total_correct: Some(0),
+            total_testcases: Some(1),
+        };
+
+        let result = SubmissionResult::from_test_check(check);
+        assert!(result.is_test);
+        assert_eq!(result.status, SubmissionStatus::RuntimeError);
+        assert_eq!(result.full_runtime_error.as_deref(), Some("panic message"));
+        assert_eq!(
+            result.std_output_list,
+            Some(vec!["single fallback output\n".into()])
+        );
+    }
+
+    #[test]
+    fn test_from_test_check_none_stdout_and_default_status() {
+        let check = TestSubmissionCheckResult {
+            code_answer: None,
+            code_output: None,
+            correct_answer: None,
+            expected_code_answer: None,
+            full_runtime_error: None,
+            lang: None,
+            memory_percentile: None,
+            run_success: None,
+            runtime_percentile: None,
+            state: "SUCCESS".into(),
+            status_memory: None,
+            status_msg: None, // should default to "Unknown"
+            status_runtime: None,
+            std_output: None,
+            std_output_list: None,
+            total_correct: None,
+            total_testcases: None,
+        };
+
+        let result = SubmissionResult::from_test_check(check);
+        assert_eq!(result.status, SubmissionStatus::Unknown("Unknown".into()));
+        assert_eq!(result.std_output_list, None);
+    }
+
+    #[test]
+    fn test_from_submit_check_with_std_output_and_fields() {
+        let check = SubmissionCheckResult {
+            code_output: Some("[3,0]".into()),
+            compile_error: Some("unused variable".into()),
+            expected_output: Some("[0,1]".into()),
+            finished: Some(true),
+            full_runtime_error: None,
+            input: Some("[2,7,11,15]\n9".into()),
+            input_formatted: None,
+            last_testcase: Some("[2,7,11,15]\n9".into()),
+            memory_percentile: Some(45.0),
+            run_success: Some(false),
+            runtime_percentile: Some(50.0),
+            state: "SUCCESS".into(),
+            status_memory: Some("12 MB".into()),
+            status_msg: Some("Wrong Answer".into()),
+            status_runtime: Some("4 ms".into()),
+            std_output: Some("submit log\n".into()),
+            std_output_list: None,
+            total_correct: Some(12),
+            total_testcases: Some(57),
+        };
+
+        let result = SubmissionResult::from_submit_check(check);
+        assert!(!result.is_test);
+        assert_eq!(result.status, SubmissionStatus::WrongAnswer);
+        assert_eq!(result.input.as_deref(), Some("[2,7,11,15]\n9"));
+        assert_eq!(result.expected_output.as_deref(), Some("[0,1]"));
+        assert_eq!(result.code_output.as_deref(), Some("[3,0]"));
+        assert_eq!(result.compile_error.as_deref(), Some("unused variable"));
+        assert_eq!(result.std_output_list, Some(vec!["submit log\n".into()]));
+    }
+
+    #[test]
+    fn test_from_submit_check_std_output_list_precedence() {
+        let check = SubmissionCheckResult {
+            code_output: None,
+            compile_error: None,
+            expected_output: None,
+            finished: Some(true),
+            full_runtime_error: None,
+            input: None,
+            input_formatted: None,
+            last_testcase: None,
+            memory_percentile: None,
+            run_success: Some(true),
+            runtime_percentile: None,
+            state: "SUCCESS".into(),
+            status_memory: None,
+            status_msg: Some("Accepted".into()),
+            status_runtime: None,
+            std_output: Some("ignored single".into()),
+            std_output_list: Some(vec!["preferred list\n".into()]),
+            total_correct: Some(57),
+            total_testcases: Some(57),
+        };
+
+        let result = SubmissionResult::from_submit_check(check);
+        assert_eq!(
+            result.std_output_list,
+            Some(vec!["preferred list\n".into()])
+        );
+    }
+
+    #[tokio::test]
+    async fn test_submission_service_file_not_found() {
+        let creds = LeetCodeCredentials {
+            session_cookie: "dummy_session".to_string(),
+            csrf_token: "dummy_csrf".to_string(),
+        };
+        let client = LeetCodeClient::new(creds).expect("client creation failed");
+        let service = SubmissionService::new(client);
+
+        let err = service
+            .submit_or_test("non_existent_problem_file_xyz.rs", true)
+            .await;
+        assert!(matches!(err, Err(EngineError::Io(_))));
     }
 }
