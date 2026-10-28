@@ -3,6 +3,8 @@
 //! Parses CLI arguments with Clap and dispatches to the appropriate handler.
 //! All heavy lifting (HTTP, TUI, file I/O) lives in the library crate under
 //! the [`leetrs::commands`] module.
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 use leetrs::{
     commands,
@@ -48,6 +50,12 @@ enum Commands {
     Test {
         /// The path to your solution file (e.g., 'two_sum.rs')
         file: String,
+        /// Custom test case input, one argument per line (a literal `\n` outside quotes also separates lines)
+        #[arg(short, long, conflicts_with = "cases_file")]
+        cases: Option<String>,
+        /// Path to a file containing custom test case input
+        #[arg(long)]
+        cases_file: Option<PathBuf>,
     },
     /// Setup autocomplete for shell
     Completion { shell: clap_complete::Shell },
@@ -88,8 +96,14 @@ async fn main() -> anyhow::Result<()> {
                 eprintln!("❌ {}", e);
             }
         }
-        Some(Commands::Test { file }) => {
-            if let Err(e) = commands::handle_test(file).await {
+        Some(Commands::Test {
+            file,
+            cases,
+            cases_file,
+        }) => {
+            if let Err(e) =
+                commands::handle_test(file, cases.as_deref(), cases_file.as_deref()).await
+            {
                 eprintln!("❌ {}", e);
             }
         }
@@ -105,4 +119,48 @@ async fn main() -> anyhow::Result<()> {
     };
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_cli_definition_is_valid() {
+        use clap::CommandFactory;
+        Cli::command().debug_assert();
+    }
+
+    #[test]
+    fn test_parse_test_with_inline_cases() {
+        let cli =
+            Cli::try_parse_from(["leetrs", "test", "two_sum.rs", "-c", "[3,2,4]\\n6"]).unwrap();
+        match cli.command {
+            Some(Commands::Test {
+                file,
+                cases,
+                cases_file,
+            }) => {
+                assert_eq!(file, "two_sum.rs");
+                assert_eq!(cases.as_deref(), Some("[3,2,4]\\n6"));
+                assert!(cases_file.is_none());
+            }
+            other => panic!("unexpected command: {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_parse_test_rejects_both_case_sources() {
+        let err = Cli::try_parse_from([
+            "leetrs",
+            "test",
+            "two_sum.rs",
+            "-c",
+            "6",
+            "--cases-file",
+            "inputs.txt",
+        ])
+        .unwrap_err();
+        assert_eq!(err.kind(), clap::error::ErrorKind::ArgumentConflict);
+    }
 }

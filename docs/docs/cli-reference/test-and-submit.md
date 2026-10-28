@@ -17,7 +17,7 @@ Executes your local solution file against sample test cases without recording an
 ### Usage
 
 ```bash
-leetrs test <FILE>
+leetrs test <FILE> [--cases <INPUT> | --cases-file <PATH>]
 ```
 
 ### Arguments
@@ -25,6 +25,15 @@ leetrs test <FILE>
 | Argument | Type | Description |
 |---|---|---|
 | `<FILE>` | `path` | Path to the local solution file (e.g. `two_sum.rs`, `two_sum.py`) |
+
+### Options
+
+| Option | Type | Description |
+|---|---|---|
+| `-c`, `--cases <INPUT>` | `string` | Custom test input, one argument per line. A literal `\n` outside a quoted string also separates lines. |
+| `--cases-file <PATH>` | `path` | File containing custom test input. Can't be combined with `--cases`. |
+
+Without either option, the problem's example test cases are used.
 
 ### Workflow
 
@@ -37,6 +46,8 @@ leetrs test <FILE>
 
 ```bash
 leetrs test two_sum.rs
+leetrs test two_sum.rs -c "[3,2,4]\n6"
+leetrs test two_sum.rs --cases-file ./test_inputs.txt
 ```
 
 ---
