@@ -21,11 +21,6 @@
 
 ---
 
-> [!WARNING]
->
-> This is still a **work in progress**. Breaking changes to commands and configuration
-> might happen.
-
 ## 📋 Table of Contents
 
 - [📌 Overview](#-overview)
