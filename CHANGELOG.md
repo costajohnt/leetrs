@@ -1,3 +1,13 @@
+## [v1.2.1](https://github.com/shadowmkj/leetrs/releases/tag/v1.2.1) - 2026-10-28
+
+### 🚀 Features
+
+- *(submission)* Add support for capturing and formatting stdout ([#58](https://github.com/shadowmkj/leetrs/pull/58)) - ([acf7a55](https://github.com/shadowmkj/leetrs/commit/acf7a55a8607981605a238bf30a9bfca58407767)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+
+### ⚙️ Misc
+
+- Update submodule (cookie-extract) for crates.io - ([6f1e1a3](https://github.com/shadowmkj/leetrs/commit/6f1e1a32714f38b2b258b30cd78ed757295d41a9)) (from [`@shadowmkj`](https://github.com/shadowmkj))
+- Remove work in progress warning from readme - ([c755e68](https://github.com/shadowmkj/leetrs/commit/c755e68f80d1f7f80c79fa46eed0bc34fdc8cdf6)) (from [`@shadowmkj`](https://github.com/shadowmkj))
 ## [v1.2.0](https://github.com/shadowmkj/leetrs/releases/tag/v1.2.0) - 2026-10-16
 
 ### 🚀 Features
