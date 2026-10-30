@@ -132,22 +132,25 @@ pub async fn handle_test(
 /// Resolves custom test input from `--cases` or `--cases-file`.
 ///
 /// Inline input treats a literal `\n` as a line break so `-c "[3,2,4]\n6"`
-/// works in shells that don't expand escapes. File input has its line endings
+/// works in shells that don't expand escapes. Both sources then get CRLF
 /// normalized and trailing whitespace trimmed so a final newline doesn't
-/// become an empty test line. Empty input is rejected.
+/// become an empty test line. Empty input, or both sources at once, is rejected.
 fn resolve_custom_cases(
     cases: Option<&str>,
     cases_file: Option<&Path>,
 ) -> std::result::Result<Option<String>, String> {
-    let resolved = if let Some(path) = cases_file {
+    if cases.is_some() && cases_file.is_some() {
+        return Err("cannot specify both --cases and --cases-file".to_string());
+    }
+    let raw = if let Some(path) = cases_file {
         fs::read_to_string(path)
-            .map(|s| s.replace("\r\n", "\n").trim_end().to_string())
             .map_err(|e| format!("Failed to read cases file '{}': {}", path.display(), e))?
     } else if let Some(cases) = cases {
         unescape_line_breaks(cases)
     } else {
         return Ok(None);
     };
+    let resolved = raw.replace("\r\n", "\n").trim_end().to_string();
 
     if resolved.trim().is_empty() {
         return Err("Custom test input is empty".to_string());
@@ -359,5 +362,23 @@ mod tests {
         fs::remove_file(&path).unwrap();
         assert_eq!(crlf, Ok(Some("[1,2]\n3".to_string())));
         assert!(blank.is_err());
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_inline_trims_trailing_newlines_and_crlf() {
+        assert_eq!(
+            resolve_custom_cases(Some("[3,2,4]\\n6\\n\\n"), None),
+            Ok(Some("[3,2,4]\n6".to_string()))
+        );
+        assert_eq!(
+            resolve_custom_cases(Some("[3,2,4]\r\n6\r\n"), None),
+            Ok(Some("[3,2,4]\n6".to_string()))
+        );
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_rejects_both_sources() {
+        let err = resolve_custom_cases(Some("1"), Some(Path::new("x.txt"))).unwrap_err();
+        assert!(err.contains("cannot specify both"));
     }
 }
