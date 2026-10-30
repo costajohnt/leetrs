@@ -133,11 +133,12 @@ impl Picker {
         Ok((code_filename, desc_filename))
     }
 
-    /// Runs the solution file against the problem's built-in example test cases
-    /// and prints the result, but **does not** record it as an official submission.
-    pub async fn test_submit(&self, file: &str) {
+    /// Runs the solution file against `custom_cases`, or the problem's built-in
+    /// example test cases when `None`, and prints the result, but **does not**
+    /// record it as an official submission.
+    pub async fn test_submit(&self, file: &str, custom_cases: Option<&str>) {
         let service = SubmissionService::new(self.client.clone());
-        match service.submit_or_test(file, true).await {
+        match service.submit_or_test(file, true, custom_cases).await {
             Ok(result) => format_result(&result),
             Err(e) => eprintln!("❌ {}", e),
         }
@@ -147,7 +148,7 @@ impl Picker {
     /// verdict, test-case counts, and performance percentiles.
     pub async fn submit(&self, file: &str) {
         let service = SubmissionService::new(self.client.clone());
-        match service.submit_or_test(file, false).await {
+        match service.submit_or_test(file, false, None).await {
             Ok(result) => format_result(&result),
             Err(e) => eprintln!("❌ {}", e),
         }

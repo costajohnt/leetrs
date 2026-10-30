@@ -3,7 +3,7 @@
 //! Each public function here corresponds to one CLI sub-command. Separating
 //! them from `main.rs` keeps the binary entry-point thin (CLI parsing only)
 //! and makes the handlers independently testable.
-use std::{fs, io, process::Command, rc::Rc};
+use std::{fs, io, path::Path, process::Command, rc::Rc};
 
 use clap::CommandFactory;
 use clap_complete::{
@@ -116,11 +116,75 @@ pub async fn handle_pick(
     pick_and_open(&picker, identifier, language, preview).await
 }
 
-/// Runs the solution against example test cases without recording a submission.
-pub async fn handle_test(file: &str) -> std::result::Result<(), String> {
+/// Runs the solution against example test cases (or custom input from
+/// `cases` / `cases_file`) without recording a submission.
+pub async fn handle_test(
+    file: &str,
+    cases: Option<&str>,
+    cases_file: Option<&Path>,
+) -> std::result::Result<(), String> {
+    let custom_cases = resolve_custom_cases(cases, cases_file)?;
     let picker = make_picker().await?;
-    picker.test_submit(file).await;
+    picker.test_submit(file, custom_cases.as_deref()).await;
     Ok(())
+}
+
+/// Resolves custom test input from `--cases` or `--cases-file`.
+///
+/// Inline input treats a literal `\n` as a line break so `-c "[3,2,4]\n6"`
+/// works in shells that don't expand escapes. Both sources then get CRLF
+/// normalized and trailing whitespace trimmed so a final newline doesn't
+/// become an empty test line. Empty input, or both sources at once, is rejected.
+fn resolve_custom_cases(
+    cases: Option<&str>,
+    cases_file: Option<&Path>,
+) -> std::result::Result<Option<String>, String> {
+    if cases.is_some() && cases_file.is_some() {
+        return Err("cannot specify both --cases and --cases-file".to_string());
+    }
+    let raw = if let Some(path) = cases_file {
+        fs::read_to_string(path)
+            .map_err(|e| format!("Failed to read cases file '{}': {}", path.display(), e))?
+    } else if let Some(cases) = cases {
+        unescape_line_breaks(cases)
+    } else {
+        return Ok(None);
+    };
+    let resolved = raw.replace("\r\n", "\n").trim_end().to_string();
+
+    if resolved.trim().is_empty() {
+        return Err("Custom test input is empty".to_string());
+    }
+    Ok(Some(resolved))
+}
+
+/// Replaces literal `\n` with a line break, except inside JSON string
+/// literals, where `\n` is an escape the judge must see unchanged
+/// (e.g. `"dir\n\tfile.ext"`).
+fn unescape_line_breaks(input: &str) -> String {
+    let mut out = String::with_capacity(input.len());
+    let mut chars = input.chars().peekable();
+    let mut in_string = false;
+    while let Some(c) = chars.next() {
+        match c {
+            '"' => {
+                in_string = !in_string;
+                out.push(c);
+            }
+            '\\' if in_string => {
+                out.push(c);
+                if let Some(escaped) = chars.next() {
+                    out.push(escaped);
+                }
+            }
+            '\\' if chars.peek() == Some(&'n') => {
+                chars.next();
+                out.push('\n');
+            }
+            _ => out.push(c),
+        }
+    }
+    out
 }
 
 /// Submits the solution to LeetCode for full judging.
@@ -234,4 +298,87 @@ pub async fn pick_and_open(
         print!("{}", content);
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_resolve_custom_cases_none_uses_default() {
+        assert_eq!(resolve_custom_cases(None, None), Ok(None));
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_inline_unescapes_newlines() {
+        assert_eq!(
+            resolve_custom_cases(Some("[3,2,4]\\n6"), None),
+            Ok(Some("[3,2,4]\n6".to_string()))
+        );
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_reads_file() {
+        let path = std::env::temp_dir().join(format!("leetrs-cases-{}.txt", std::process::id()));
+        fs::write(&path, "[2,7,11,15]\n9\n").unwrap();
+        let result = resolve_custom_cases(None, Some(&path));
+        fs::remove_file(&path).unwrap();
+        assert_eq!(result, Ok(Some("[2,7,11,15]\n9".to_string())));
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_missing_file_errors() {
+        let path = Path::new("definitely_missing_cases_file_xyz.txt");
+        let err = resolve_custom_cases(None, Some(path)).unwrap_err();
+        assert!(err.contains("Failed to read cases file"));
+        assert!(err.contains("definitely_missing_cases_file_xyz.txt"));
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_keeps_escapes_inside_strings() {
+        assert_eq!(
+            resolve_custom_cases(Some(r#""dir\n\tfile.ext"\n2"#), None),
+            Ok(Some("\"dir\\n\\tfile.ext\"\n2".to_string()))
+        );
+        assert_eq!(
+            resolve_custom_cases(Some(r#""a\\"\n"b""#), None),
+            Ok(Some("\"a\\\\\"\n\"b\"".to_string()))
+        );
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_rejects_empty_input() {
+        assert!(resolve_custom_cases(Some(""), None).is_err());
+        assert!(resolve_custom_cases(Some("  "), None).is_err());
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_normalizes_crlf_and_rejects_blank_file() {
+        let path = std::env::temp_dir().join(format!("leetrs-crlf-{}.txt", std::process::id()));
+        fs::write(&path, "[1,2]\r\n3\r\n").unwrap();
+        let crlf = resolve_custom_cases(None, Some(&path));
+        fs::write(&path, "\n\n").unwrap();
+        let blank = resolve_custom_cases(None, Some(&path));
+        fs::remove_file(&path).unwrap();
+        assert_eq!(crlf, Ok(Some("[1,2]\n3".to_string())));
+        assert!(blank.is_err());
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_inline_trims_trailing_newlines_and_crlf() {
+        assert_eq!(
+            resolve_custom_cases(Some("[3,2,4]\\n6\\n\\n"), None),
+            Ok(Some("[3,2,4]\n6".to_string()))
+        );
+        assert_eq!(
+            resolve_custom_cases(Some("[3,2,4]\r\n6\r\n"), None),
+            Ok(Some("[3,2,4]\n6".to_string()))
+        );
+    }
+
+    #[test]
+    fn test_resolve_custom_cases_rejects_both_sources() {
+        let err = resolve_custom_cases(Some("1"), Some(Path::new("x.txt"))).unwrap_err();
+        assert!(err.contains("cannot specify both"));
+    }
 }

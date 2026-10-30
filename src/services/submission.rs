@@ -173,12 +173,23 @@ impl SubmissionService {
 
     /// Submits `file` as either a full submission or a test run and returns
     /// a structured [`SubmissionResult`].
-    pub async fn submit_or_test(&self, file: &str, is_test: bool) -> Result<SubmissionResult> {
+    ///
+    /// Test runs use `custom_cases` as the judge input when given, otherwise
+    /// the problem's example test cases. Full submissions ignore it.
+    pub async fn submit_or_test(
+        &self,
+        file: &str,
+        is_test: bool,
+        custom_cases: Option<&str>,
+    ) -> Result<SubmissionResult> {
         let (code, slug, language, question) = self.read_and_resolve(file).await?;
 
         println!("🚀 Submitting {}...", file);
 
         if is_test {
+            if custom_cases.is_some() {
+                println!("🧪 Running against custom test cases");
+            }
             // NOTE: LeetCode's interpret_solution endpoint requires the internal `question_id`
             // (not the public `question_frontend_id`) in its request payload.
             let interpret_id = self
@@ -188,7 +199,7 @@ impl SubmissionService {
                     &question.question_id,
                     language.to_lang_slug(),
                     &code,
-                    &question.example_test_cases,
+                    custom_cases.unwrap_or(&question.example_test_cases),
                 )
                 .await
                 .map_err(|e| EngineError::Other(format!("Test Submission failed: {}", e)))?;
@@ -428,7 +439,7 @@ mod tests {
         let service = SubmissionService::new(client);
 
         let err = service
-            .submit_or_test("non_existent_problem_file_xyz.rs", true)
+            .submit_or_test("non_existent_problem_file_xyz.rs", true, None)
             .await;
         assert!(matches!(err, Err(EngineError::Io(_))));
     }
