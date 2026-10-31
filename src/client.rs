@@ -92,6 +92,10 @@ pub trait LeetCodeApi {
             std::collections::HashMap<u64, u64>,
         )>,
     > + Send;
+
+    fn get_daily_challenge(
+        &self,
+    ) -> impl std::future::Future<Output = Result<crate::models::ActiveDailyQuestion>> + Send;
 }
 
 /// A configured `reqwest` HTTP client that authenticates every request with
@@ -676,5 +680,11 @@ impl LeetCodeApi for LeetCodeClient {
         )>,
     > + Send {
         LeetCodeClient::get_problem_list(self)
+    }
+
+    fn get_daily_challenge(
+        &self,
+    ) -> impl std::future::Future<Output = Result<crate::models::ActiveDailyQuestion>> + Send {
+        LeetCodeClient::get_daily_challenge(self)
     }
 }

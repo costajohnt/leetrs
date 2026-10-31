@@ -44,7 +44,6 @@ enum Commands {
     /// Pick today's LeetCode Problem of the Day
     Daily {
         /// Language for the code template (defaults to config.toml)
-        #[arg(short, long)]
         language: Option<Language>,
         /// Print the problem description to stdout instead of opening the editor
         #[arg(short, long)]
@@ -176,5 +175,35 @@ mod tests {
         ])
         .unwrap_err();
         assert_eq!(err.kind(), clap::error::ErrorKind::ArgumentConflict);
+    }
+
+    #[test]
+    fn test_parse_daily_defaults() {
+        let cli = Cli::try_parse_from(["leetrs", "daily"]).unwrap();
+        match cli.command {
+            Some(Commands::Daily { language, preview }) => {
+                assert!(language.is_none());
+                assert!(!preview);
+            }
+            other => panic!("unexpected command: {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_parse_daily_with_language_and_preview() {
+        let cli = Cli::try_parse_from(["leetrs", "daily", "rust", "-p"]).unwrap();
+        match cli.command {
+            Some(Commands::Daily { language, preview }) => {
+                assert_eq!(language, Some(Language::Rust));
+                assert!(preview);
+            }
+            other => panic!("unexpected command: {:?}", other),
+        }
+    }
+
+    #[test]
+    fn test_parse_daily_rejects_flag_language() {
+        let err = Cli::try_parse_from(["leetrs", "daily", "-l", "python"]).unwrap_err();
+        assert_eq!(err.kind(), clap::error::ErrorKind::UnknownArgument);
     }
 }
