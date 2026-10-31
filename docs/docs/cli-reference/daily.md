@@ -13,16 +13,23 @@ Fetches today's LeetCode Problem of the Day and opens it the same way [`pick`](.
 ## Usage
 
 ```bash
-leetrs daily [FLAGS]
+leetrs daily [OPTIONS] [LANGUAGE]
 ```
 
 ---
 
-## Flags
+## Arguments
 
-| Flag | Type | Required | Description |
+| Argument | Type | Required | Description |
 |---|---|---|---|
-| `-l`, `--language <LANGUAGE>` | `string` | No | Language for the code template (`python`, `rust`, `pandas`, `mysql`, `postgres`). Defaults to the `config.toml` setting. |
+| `[LANGUAGE]` | `string` | No | Language for the code template (`python`, `rust`, `pandas`, `mysql`, `postgres`). Defaults to the `config.toml` setting. |
+
+---
+
+## Options
+
+| Option | Type | Required | Description |
+|---|---|---|---|
 | `-p`, `--preview` | `flag` | No | Print the problem description Markdown to `stdout` without opening an editor. |
 
 ---
@@ -35,6 +42,6 @@ leetrs daily [FLAGS]
 
 ```bash
 leetrs daily
-leetrs daily -l rust
+leetrs daily rust
 leetrs daily --preview
 ```
