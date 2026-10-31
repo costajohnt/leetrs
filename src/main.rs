@@ -41,6 +41,15 @@ enum Commands {
         #[arg(short, long)]
         preview: bool,
     },
+    /// Pick today's LeetCode Problem of the Day
+    Daily {
+        /// Language for the code template (defaults to config.toml)
+        #[arg(short, long)]
+        language: Option<Language>,
+        /// Print the problem description to stdout instead of opening the editor
+        #[arg(short, long)]
+        preview: bool,
+    },
     /// Submit a problem to leetcode
     Submit {
         /// The path to your solution file (e.g., 'two_sum.rs')
@@ -87,6 +96,11 @@ async fn main() -> anyhow::Result<()> {
         Some(Commands::Auth) => commands::handle_auth(),
         Some(Commands::Tui { language }) => commands::open_tui(language).await,
         Some(Commands::Status) => commands::handle_status(),
+        Some(Commands::Daily { language, preview }) => {
+            if let Err(e) = commands::handle_daily(language, *preview).await {
+                eprintln!("❌ {}", e);
+            }
+        }
         Some(Commands::Pick {
             identifier,
             language,

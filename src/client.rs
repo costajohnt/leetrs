@@ -418,6 +418,33 @@ impl LeetCodeClient {
         Ok(response.user_status)
     }
 
+    /// Fetches today's Problem of the Day via the `questionOfToday` query.
+    pub async fn get_daily_challenge(&self) -> Result<crate::models::ActiveDailyQuestion> {
+        let query_string = r#"
+                query questionOfToday {
+                  activeDailyCodingChallengeQuestion {
+                    date
+                    question {
+                      questionFrontendId
+                      title
+                      titleSlug
+                      difficulty
+                      isPaidOnly
+                    }
+                  }
+                }
+        "#;
+
+        let query = GraphQLQuery {
+            query: query_string.to_string(),
+            variables: None,
+            operation_name: Some("questionOfToday".to_string()),
+        };
+
+        let response: crate::models::DailyChallengeResponse = self.execute_graphql(query).await?;
+        Ok(response.active_daily_coding_challenge_question)
+    }
+
     /// Fetches all topic tags along with the set of problem IDs tagged under each.
     ///
     /// The response is deeply nested (`questionTopicTags > edges > node`); local
